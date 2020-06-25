@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
@@ -32,19 +33,16 @@ public class MoviesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movies);
         rvMovies = findViewById(R.id.rvMovies);
+        movies = new ArrayList<>();
 
-        // Create the adapter to convert the array to views
-        MoviesAdapter adapter = new MoviesAdapter(movies);
-
-        // Attach the adapter to a ListView
-        rvMovies.setAdapter(adapter);
-
+        // Set a layout manager on the recycler view
+        rvMovies.setLayoutManager(new LinearLayoutManager(this));
         fetchMovies();
     }
 
 
     private void fetchMovies() {
-        String url = " https://api.themoviedb.org/3/movie/now_playing?api_key=";
+        String url = "https://api.themoviedb.org/3/movie/now_playing?api_key=9144031636e4d899903ed80fc2b6d903";
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(url, null, new JsonHttpResponseHandler() {
             @Override
@@ -52,6 +50,14 @@ public class MoviesActivity extends AppCompatActivity {
                 try {
                     JSONArray moviesJson = response.jsonObject.getJSONArray("results");
                     movies = Movie.fromJSONArray(moviesJson);
+
+                    // Create the adapter to convert the array to views
+                    adapter = new MoviesAdapter(movies);
+
+                    // Attach the adapter to a ListView
+                    rvMovies.setAdapter(adapter);
+
+                    Log.i("MoviesActivity", "onSuccess");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
